@@ -1,5 +1,37 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--Created with JFLAP 6.4.--><structure>
-    <type>fa</type>
+header = '<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--Created with JFLAP 6.4.--><structure>\n'
+tab = '    '
+stateHeader = ['<state id="', '" name="', '">']
+
+def writeState(idOfState, name, xCoor, yCoor, isInitial, isFinal):
+    stateString = [stateHeader[0] + idOfState + stateHeader[1] + name + stateHeader[2] ]
+    stateString += ['    <x>' + xCoor + '</x>']
+    stateString += ['    <y>' + xCoor + '</y>']
+    if isInitial:
+        stateString += ['    <initial/>']
+    if isFinal:
+        stateString += ['    <final/>']
+    stateString += ['</state>']    
+    return stateString
+
+
+def writeTransition( fromNode, toNode , read):
+    transString = ['<transition']
+    transString += ['    <from>' + fromNode + '</from>']
+    transString += ['    <to>' + toNode + '</to>']
+    transString += ['    <read>' + read + '</read>']
+    transString += ['</transition']
+    return transString
+
+def main():
+    f = open('output.jff', 'w')
+    f.write(header)
+    f.write(string + '\n')
+    nextNode = writeState('7', "q7", '215', '123', False, True)
+    for thing in nextNode:
+        f.write('        ' + thing + '\n')
+    f.close()
+
+string = """    <type>fa</type>
     <automaton>
         <!--The list of states.-->
         <state id="0" name="q0">
@@ -90,9 +122,7 @@
             <read>0</read>
         </transition>
     </automaton>
-</structure>
-        <state id="7" name="q7">
-            <x>215</x>
-            <y>215</y>
-            <final/>
-        </state>
+</structure>"""
+if __name__ == '__main__':
+    main()
+

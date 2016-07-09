@@ -1,11 +1,8 @@
 # Jason Ma
 # Developed 6/17/16
 # Hey this date is a palindrome!, kinda
-import ast
-#
-from JFLAPWriter import *
-import codecs
-import sys  
+
+
 
 
 def getNextTupleList(S, delim1, delim2):
@@ -55,6 +52,8 @@ def fileValues( file ):
     nodeL, edgeL, initNode, finalNodeL = parseFile(file)
     return nodeL, edgeL, initNode, finalNodeL
 
+
+    
 def main():
     """Reads nfa.txt for testing purposes. Checks if the correct values are parsed from the file"""
     #filename = input("What is the name of the file")
