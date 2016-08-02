@@ -1,5 +1,7 @@
 
 # coding=utf-8
+# This is the old code that the school uses to grade JFLAP files
+# Due to the messiness of this code, I will refactor it.
 # This is Jason Ma in the year 2016. I have no idea what
 # any of this code does. God help me.
 

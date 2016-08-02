@@ -3,8 +3,8 @@
 #Designed to mimic finite state automata and run them to see if inputs are accepted or not
 
 
-import JSFLAPConverter
-import sys
+import JSFLAPReader
+
 lamb = '☐'
 lambdaChar = 'λ'
 class Node:
@@ -102,7 +102,7 @@ class Edge:
         Determines if the edge signifieas any actions (ie write or move right/left)
         Determines what needs to be read in order to traverse the edge"""
         if '/' not in readWriteTrigger and ';' not in readWriteTrigger:
-            return readWriteTrigger, None, None
+            return self.replaceEmptyChar(readWriteTrigger), None, None
         else:
             return self.replaceEmptyChar(readWriteTrigger[0]), self.replaceEmptyChar(readWriteTrigger[2]), readWriteTrigger[-1]
 
@@ -129,7 +129,16 @@ class StateMachine:
         self.initial = initial
         self.accepting = accepting
         self.machine, self.deterministic = self.whatAmI( typeOfMachine, deterministic)
+        self.isDeterministic(edgeL, deterministic)
 
+    def isDeterministic(self, edgeL, deterministic):
+        """Used in the state machine creators to test to see if the machine has the attribute determinstic that the
+        transitions follow this rule. Accepts a list of edges and the deterministic attribute(a string) and returns a boolean
+        True if the determinstic nature matches the values on the edges, false otherwise"""
+        for edge in edgeL:
+            if edge.readVal == lambdaChar and deterministic == 'd':
+                raise ValueError("You cannot have lambda transitions in a deterministic state machine!")
+        return
 
     def whatAmI( self, typeOfMachine, deterministic ):
         """Determines what type of machine (finite state automata or turing) 
@@ -282,6 +291,29 @@ def findNode( name, nodeL ):
             return node
     return None
 
+
+
+def parseStateMachine(filename):
+    """Accepts a string filename. Looks for a file named filename and tries to open it and parse for a statemachine to run frmo it"""
+    try:
+        file = open(filename, 'r', encoding = 'utf-8')
+    except IOError:
+        print('File does not appear to exist. Remember to place the file in the same directory as this reader!')
+        file = None
+    if not file:
+        return
+    deterministic = file.read(1).lower()
+    automata = file.read(2).lower()
+    tempNodeL, tempEdgeL, tempInitNode, tempFinalNodeL = JSFLAPReader.fileValues(file)  
+    nodeL = [Node(node, [], node in tempInitNode, node in tempFinalNodeL) for node in tempNodeL]
+    edgeL = [Edge( findNode(edge[0], nodeL), findNode(edge[1], nodeL), edge[2]) for edge in tempEdgeL]
+    for node in nodeL:
+        node.addEdge(edgeL)
+    initNode = findNode( tempInitNode[0], nodeL )
+    finalNodeL = [findNode( name, nodeL) for name in tempFinalNodeL]
+    stateMech = StateMachine( nodeL, edgeL, initNode, finalNodeL, automata,  deterministic )
+    return stateMech
+
 def testFile(filename, inputL):
     """Accepts a string filename and a list of strings inputL
         Uses filename to read a .txt file exported from JSFLAP and creates a finite state automata
@@ -303,16 +335,16 @@ def testFile(filename, inputL):
     automata = file.read(2).lower()
 
     #Parses the nodes and edges from the file using JSFLAP converter
-    tempNodeL, tempEdgeL, tempInitNode, tempFinalNodeL = JSFLAPConverter.fileValues(file)  
+    tempNodeL, tempEdgeL, tempInitNode, tempFinalNodeL = JSFLAPReader.fileValues(file)  
 
-    #Convert the list of strings tempNodeL to Node objects
+    #Convert the list of strings tempNodeL to Node objects. No associated edges yet
     #Converts the list of tuples to Edge objects
     #Just pass an empty list for the edgeL for the nodes because we don't have a list of Edge objects yet
     nodeL = [Node(node, [], node in tempInitNode, node in tempFinalNodeL) for node in tempNodeL]
     edgeL = [Edge( findNode(edge[0], nodeL), findNode(edge[1], nodeL), edge[2]) for edge in tempEdgeL]
 
-    #Since we now have a list of Edge objects, pass each node the list of Edges, so they can
-    #determine which edges are related to them
+    #Since we now have a list of Edge objects, 
+    #Associate nodes with their edges now.
     for node in nodeL:
         node.addEdge(edgeL)
 
@@ -333,7 +365,7 @@ def main():
     #filename = input("What is the name of the file")
 
     #Opens the specfied file
-    filename = 'ThirdToLastOne.txt'
+    filename = 'div7.txt'
     try:
         file = open(filename, 'r', encoding = 'utf-8')
     except IOError:
@@ -346,7 +378,7 @@ def main():
     deterministic = file.read(1).lower()
     automata = file.read(2).lower()
     #Parses the nodes and edges from the file using JSFLAP converter
-    tempNodeL, tempEdgeL, tempInitNode, tempFinalNodeL = JSFLAPConverter.fileValues(file)
+    tempNodeL, tempEdgeL, tempInitNode, tempFinalNodeL = JSFLAPReader.fileValues(file)
 
     #Convert the list of strings tempNodeL to Node objects
     #Converts the list of tuples to Edge objects
@@ -410,9 +442,11 @@ def main():
         #print(string + ' : ' + str(stateMech.runInput(string)))
 
     #Testing if third to last bit is 1
-    strings = ['', '0', '1','00', '01', '10', '11', '000', '001', '010', '011', '100', '101', '110', '111', '0000', '0001', '0010', '0011', '0100', '0101', '0110', '0111', '1000', '1001', '1010', '1011', '1100', '1101', '1110', '1111', '0111010100', '1001010011', '0110100001', '0110100001', '1110010110', '100101101101']
-    for string in strings:
-        print(string + ' : ' + str(stateMech.runInput(string)))    
+    #strings = ['', '0', '1','00', '01', '10', '11', '000', '001', '010', '011', '100', '101', '110', '111', '0000', '0001', '0010', '0011', '0100', '0101', '0110', '0111', '1000', '1001', '1010', '1011', '1100', '1101', '1110', '1111', '0111010100', '1001010011', '0110100001', '0110100001', '1110010110', '100101101101']
+    #for string in strings:
+        #print(string + ' : ' + str(stateMech.runInput(string)))    
+
+    print(stateMech.edgeL)
 if __name__ == '__main__':
     main()
 

@@ -1,0 +1,43 @@
+from xml.etree import ElementTree
+from xml.dom import minidom
+
+from xml.etree.ElementTree import Element, SubElement, Comment, tostring
+def prettify(elem):
+    """Return a pretty-printed XML string for the Element.
+    """
+    rough_string = ElementTree.tostring(elem, 'utf-8')
+    reparsed = minidom.parseString(rough_string)
+    return reparsed.toprettyxml(indent="    ")
+
+def addCorrectHeader(top):
+    newTop = ''
+    newHeader = 'encoding="UTF-8" standalone="no"'
+    for char in range(len(top)):
+        newTop += top[char]
+        if char == 19:
+            newTop += newHeader
+    return newTop
+
+top = Element('structure')
+topTail = SubElement(top, 'type')
+topTail.text = 'fa'
+
+automaton = SubElement(top, 'automaton')
+automaton.append(Comment('The list of states.'))
+
+state = SubElement(automaton, 'state', id = '0', name = 'q0')
+xCoor = SubElement(state, 'x')
+xCoor.text = '420.0'
+yCoor = SubElement(state, 'y')
+yCoor.text = '69.0'
+initial = SubElement(state, 'initial')
+final = SubElement(state, 'final')
+
+
+newTop = ''
+top = prettify(top)
+
+newTop = addCorrectHeader(top)
+
+
+print(newTop)
