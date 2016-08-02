@@ -1,4 +1,7 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*- 
 import JFFWriterv2
+import StateMachine
 
 def main():
     while(True):
@@ -6,12 +9,13 @@ def main():
         print("1. Convert JSFLAP File to .jff Format")
         print("2. Create a state machine from command line")
         print("3. Quit")
-        decision = input("What do you want to do? (Pick a number)")
+        decision = input("What do you want to do? (Pick a number)\n")
         if str(decision) == '1':
             convertJSFLAPToJFLAP()
         elif str(decision) == '2':
             createStateMachine()
         elif str(decision) == '3':
+            print("Goodbye!")
             break
         else:
             print("Invalid input, please select a valid command(1-3)")
@@ -32,13 +36,13 @@ def createStateMachine():
         print("Enter 'fa' for Finite Automata's (Read string and determines if it's in the language")
         print("Enter 'tm' to create a Turing Machine")
         typeOfMachine = input()
-        if typeOfMachine != 'Finite State Automata' and typeOfMachine != 'Turing Machine':
+        if typeOfMachine != 'fa' and typeOfMachine != 'fa':
             print("Invalid input, try again.")
         else:
             break
     while(True):
         print('Is your machine deterministic (Does it accept lambda/empty transitions)?')
-        deterministic = input("Enter 'd' if yes, and 'n' if not")
+        deterministic = str(input("Enter 'd' if yes, and 'n' if not"))
         if deterministic != 'd' and deterministic != 'n':
             print('Invalid input, please try again.\n')
         else:

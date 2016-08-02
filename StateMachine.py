@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*- 
 #Developed by Jason Ma
 #Date:07/08/2016
 #Designed to mimic finite state automata and run them to see if inputs are accepted or not

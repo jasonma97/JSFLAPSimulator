@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*- 
 # Jason Ma
 # Developed 6/17/16
 # Hey this date is a palindrome!, kinda

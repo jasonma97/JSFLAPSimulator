@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*- 
 from xml.etree import ElementTree
 from xml.dom import minidom
 from xml.etree.ElementTree import Element, SubElement, Comment, tostring
