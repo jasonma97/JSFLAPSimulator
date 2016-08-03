@@ -179,6 +179,8 @@ def getReadWriteVal(deterministic):
         if readVal == 'lambda' and deterministic == 'd':
             print("You can't have lambda transitions on deterministic machines.")
             print("Enter a new read value, please!")
+        if readVal == 'lambda':
+            
         if len(readVal) > 1:
             print("Edges only read one character at a time! Enter in one character next time.")
         else:
