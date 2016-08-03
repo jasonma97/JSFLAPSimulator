@@ -300,8 +300,9 @@ def parseStateMachine(filename):
     try:
         file = open(filename, 'r', encoding = 'utf-8')
     except IOError:
-        print('File does not appear to exist. Remember to place the file in the same directory as this reader!')
+        raise IOError('File does not appear to exist. Remember to place the file in the same directory as this reader!')
         file = None
+        return
     if not file:
         return
     deterministic = file.read(1).lower()

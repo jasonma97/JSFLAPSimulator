@@ -110,12 +110,15 @@ def addNode(nodeL):
         nodeName = input("Enter the name of the node:\n")
         if nodeName == 'q':
             return nodeL
+        validNode = True
         for node in nodeL:
             if node == nodeName:
                 print("This name has been used before! Try again with a new name")
-                continue
-        nodeL.append(nodeName)
-        return nodeL
+                validNode = False
+        if validNode:                  
+            nodeL.append(nodeName)
+            break
+    return nodeL
 
 def addEdge(nodeL, edgeL, typeOfMachine, deterministic):
     print("Entering a new edge. Enter q at anytime to quit.")
@@ -307,13 +310,15 @@ def generateJFLAPFile(deterministic, typeOfMachine, nodeL, edgeL, initial, accep
     if DEBUG:
         print(finalNodeL)
     stateMech = StateMachine.StateMachine( newNodeL, newEdgeL, initNode, finalNodeL, typeOfMachine, deterministic)
-    filename = input("What do you want the output to be named?")
+    filename = input("What do you want the output to be named?\n")
     filename+='.txt'   
     JFFWriterv2.writeJFFFile(stateMech, filename)
     
 
 def convertJSFLAPToJFLAP():
     filename = input("What is the name of the JSFLAP file you want to convert? (Don't forget the file extension)\n")
+    if filename == 'q':
+        return
     JFFWriterv2.convertFromJSFLAP2JFLAP(filename)
 
 def fixFile(filename):
