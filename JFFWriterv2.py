@@ -85,7 +85,7 @@ def writeFA(stateMech, filename):
 
 def writeTM(stateMech, filename):
     if filename[-4:] != '.txt':
-        print('This needs to have a .txt extension to work!')
+        raise Exception('This needs to have a .txt extension to work!')
         return
     f = open(filename[:-4] + 'jflap.jff', 'w')
     root = Element('structure')

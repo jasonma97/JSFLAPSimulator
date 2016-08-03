@@ -42,7 +42,7 @@ def createStateMachine():
             break
     while(True):
         print('Is your machine deterministic (Does it accept lambda/empty transitions)?')
-        deterministic = str(input("Enter 'd' if yes, and 'n' if not"))
+        deterministic = str(input("Enter 'd' if yes, and 'n' if not:\n"))
         if deterministic != 'd' and deterministic != 'n':
             print('Invalid input, please try again.\n')
         else:
@@ -76,13 +76,16 @@ def createStateMachine():
         elif decision == '5':
             accepting = removeAcceptingNode(accepting)
         elif decision == '6':
-            nodeL = deleteNode(nodeL, initial, accepting)
+            nodeL, initial, accepting = deleteNode(nodeL, initial, accepting)
         elif decision == '7':
             edgeL = removeEdge(edgeL, typeOfMachine)
         elif decision == '8':
-            generateJFLAP(deterministic, typeOfMachine, nodeL, edgeL, initial, accepting)
-            print("Goodbye! Thanks for using my program!")
-            break
+            try:
+                generateJFLAPFile(deterministic, typeOfMachine, nodeL, edgeL, initial, accepting)
+            except NameError:
+                print("Try entering a better filename next time")
+            #print("Goodbye! Thanks for using my program!")
+            #break
         elif decision == '9':
             print("Goodbye!")
             break
@@ -97,26 +100,26 @@ def createStateMachine():
 def addNode(nodeL):
     print("Entering a new node. Enter q at anytime to quit.")
     while(True):
-        nodeName = input("Enter the name of the node")
+        nodeName = input("Enter the name of the node:\n")
         if nodeName == 'q':
             return nodeL
-        for node in NodeL:
-            if node.name == nodeName:
+        for node in nodeL:
+            if node == nodeName:
                 print("This name has been used before! Try again with a new name")
                 continue
-        nodeL.append(newNode)
+        nodeL.append(nodeName)
         return nodeL
 
 def addEdge(nodeL, edgeL, typeOfMachine, deterministic):
     print("Entering a new edge. Enter q at anytime to quit.")
     startNode = None
     while(True):
-        startNode = input("From which node does the edge start?")
+        startNode = input("From which node does the edge start?:\n")
         validNode = False
         if startNode == 'q':
             return nodeL, edgeL
         for node in nodeL:
-            if node.name == startNode:
+            if node == startNode:
                 validNode = True
         if not validNode:
             print("This is not a valid start node, enter a new one!")
@@ -125,12 +128,12 @@ def addEdge(nodeL, edgeL, typeOfMachine, deterministic):
             break
 
     while(True):
-        endNode = input("At which node does the edge end?")
+        endNode = input("At which node does the edge end?:\n")
         validNode = False
         if endNode == 'q':
             return nodeL, edgeL
         for node in nodeL:
-            if node.name == endNode:
+            if node == endNode:
                 validNode = True
         if not validNode:
             print("This is not a valid ending node, enter a new one.")
@@ -152,9 +155,9 @@ def addEdge(nodeL, edgeL, typeOfMachine, deterministic):
 def getReadVal(deterministic):
     while(True):
         if deterministic == 'd':
-            readVal = input('What value does this edge read?')
+            readVal = input('What value does this edge read?:\n')
         else:
-            readVal = input('What value does this edge read? (Enter lambda for lambda transitions)')
+            readVal = input('What value does this edge read? (Enter lambda for lambda transitions):\n')
         if readVal == 'q':
             return 'q'
         if readVal == 'lambda' and deterministic == 'd':
@@ -168,9 +171,9 @@ def getReadVal(deterministic):
 def getReadWriteVal(deterministic):
     while(True):
         if deterministic == 'd':
-            readVal = input('What value does this edge read?')
+            readVal = input('What value does this edge read?:\n')
         else:
-            readVal = input('What value does this edge read? (Enter lambda for lambda transitions)')
+            readVal = input('What value does this edge read? (Enter lambda for lambda transitions):\n')
         if readVal == 'q':
             return 'q'
         if readVal == 'lambda' and deterministic == 'd':
@@ -183,9 +186,9 @@ def getReadWriteVal(deterministic):
 
     while(True):
         if deterministic == 'd':
-            writeVal = input('What value does this edge write?')
+            writeVal = input('What value does this edge write?:\n')
         else:
-            writeVal = input('What value does this edge read? (Enter lambda for lambda transitions)')
+            writeVal = input('What value does this edge read? (Enter lambda for lambda transitions):')
         if writeVal == 'q':
             return 'q'
         if writeVal == 'lambda' and deterministic == 'd':
@@ -196,9 +199,9 @@ def getReadWriteVal(deterministic):
         else:
             break
     while(True):
-        direction = input("Where does the turing machine move to next? (l/s/r)")
+        direction = input("Where does the turing machine move to next? (l/s/r):\n")
         if direction == 'q':
-            return 'q':
+            return 'q'
         elif direction == 's' or direction =='r' or direction =='l':
             break
         else:
@@ -208,14 +211,14 @@ def getReadWriteVal(deterministic):
 def declareStartNode(nodeL):
     while(True):
         for a0 in range(len(nodeL)):
-            print(str(a0) + ". " + nodeL[a])
-        start = input("Enter the Index of the node to delete. 1 - " + str(len(nodeL) + ".\n"))
+            print(str(a0) + ". " + nodeL[a0])
+        start = input("Enter the Index of the node to make initial. 1 - " + str(len(nodeL) - 1) + ".\n")
         if start == 'q':
             return None
-        if start >= len(nodeL):
+        if int(start) >= len(nodeL):
             print("Node specified not in range. Try again.")
         else:
-            return nodeL[start]
+            return nodeL[int(start)]
 
 def declareAcceptingNode(nodeL, acceptingL):
     while(True):
@@ -224,64 +227,76 @@ def declareAcceptingNode(nodeL, acceptingL):
         acc = input("Enter the index of the node you want to make accepting. 1 - " + str(len(nodeL) - 1) + ".\n")
         if acc == 'q':
             return acceptingL
-        elif acc >= len(nodeL):
+        elif int(acc) >= len(nodeL):
             print("Node specified not in range. Try again.")
         else:
-            return acceptingL.append(nodeL[acc])
+            acceptingL.append(nodeL[int(acc)])
+            return acceptingL
 
 def removeAcceptingNode(acceptingL):
     for a0 in range(len(acceptingL)):
         print(str(a0) + ". " + acceptingL[a0])
-    delete = input("Enter the index of the node to remove from accepting nodes. 1 - " + str(len(nodeL) - 1) + ".\n") 
+    delete = input("Enter the index of the node to remove from accepting nodes. 1 - " + str(len(acceptingL) - 1) + ".\n") 
     if delete == 'q':
         return acceptingL
-    elif delete >= len(acceptingL):
+    elif int(delete) >= len(acceptingL):
         print("Node specified not in range. Try again.")
     else:
-        return [acceptNode for acceptNode in acceptingL if acceptNode != acceptingL[delete]]
+        return [acceptNode for acceptNode in acceptingL if acceptNode != acceptingL[int(delete)]]
 
 def deleteNode(nodeL, initial, acceptingL):
-    while(True)
+    while(True):
         for a0 in range(len(nodeL)):
             print(str(a0) + ". " + nodeL[a0])
         delete = input("Enter the index of the node to remove from accepting nodes. 1 - " + str(len(nodeL) - 1) + ".\n")
-        if delete == q:
+        if delete == 'q':
             return nodeL, initial, acceptingL
-        elif delete >= len(nodeL):
+        elif int(delete) >= len(nodeL):
             print("Node specified not in range. Try again.")
         else:
-            if initial == nodeL[delete]:
+            if initial == nodeL[int(delete)]:
                 initial = None
-            if nodeL[delete] in acceptingL:
+            if nodeL[int(delete)] in acceptingL:
                 acceptingL = [accept for accept in acceptingL if accept != nodeL[delete]]
-            nodeL = [node for node in nodeL if node != nodeL[delete]]
+            nodeL = [nodeL[a0] for a0 in range(len(nodeL)) if a0 != int(delete)]
             return nodeL, initial, acceptingL
 
 def removeEdge(edgeL, typeOfMachine):
-    while(True)
+    while(True):
         if typeOfMachine == 'tm':
-            for edge in range(len(edgeL)):
+            for a0 in range(len(edgeL)):
                 print(str(a0) + ". " + edgeL[a0][0] + "/" + edgeL[a0][1] + "/ (" + edgeL[a0][2][0] + "/" + edgeL[a0][2][1] + "/" + edgeL[a0][2][2] + ")")
         else:
-            for edge in range(len(edgeL)):
+            for a0 in range(len(edgeL)):
                 print(str(a0) + ". " + edgeL[a0][0] + "/" + edgeL[a0][1] + "/" + edgeL[a0][2])
         delete = input("Enter the index of the edge to delete. 1 - " + str(len(edgeL) - 1) + '.\n')
         if delete == 'q':
             return edgeL
-        elif delete >= len(edgeL):
+        elif int(delete) >= len(edgeL):
             print("Edge specified not in range. Try again.")
         else:
-            return [edge for edge in edgeL if edge != edgeL[delete]]
+            return [edge for edge in edgeL if edge != edgeL[int(delete)]]
 
 def generateJFLAPFile(deterministic, typeOfMachine, nodeL, edgeL, initial, accepting):
     newNodeL = [StateMachine.Node(node, [], node == initial, node in accepting) for node in nodeL]
-    newEdgeL = [StateMachine.Edge( StateMachine.findNode(edge[0], newNodeL), findNode(edge, newNodeL), edge[2] for edge in edgeL)]
+    if DEBUG:
+        print(newNodeL)
+    newEdgeL = [StateMachine.Edge( StateMachine.findNode(edge[0], newNodeL), StateMachine.findNode(edge[1], newNodeL), edge[2]) for edge in edgeL]
+    if DEBUG:
+        print(newEdgeL)
     for node in newNodeL:
         node.addEdge(newEdgeL)
-    initNode = findNode( initial, newNodeL )
-    finalNodeL = [findNode( name, newNodeL) for name in accepting]
-    stateMech = StateMachine.StateMachine( newNodeL, newEdgeL, initNode, finalNodeL, automata, deterministic)
+    if DEBUG:
+        print(newNodeL)
+    initNode = StateMachine.findNode( initial, newNodeL )
+    if DEBUG:
+        print(initNode)
+    finalNodeL = [StateMachine.findNode( name, newNodeL) for name in accepting]
+    if DEBUG:
+        print(finalNodeL)
+    stateMech = StateMachine.StateMachine( newNodeL, newEdgeL, initNode, finalNodeL, typeOfMachine, deterministic)
     filename = input("What do you want the output to be named?")
+    filename+='.txt'   
     JFFWriterv2.writeJFFFile(stateMech, filename)
     
 
