@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*- 
+lamb = '☐'
 import JFFWriterv2
 import StateMachine
+import time
+input = raw_input
 DEBUG = True
 def main():
     while(True):
@@ -36,7 +39,7 @@ def createStateMachine():
         print("Enter 'fa' for Finite Automata's (Read string and determines if it's in the language")
         print("Enter 'tm' to create a Turing Machine")
         typeOfMachine = input()
-        if typeOfMachine != 'fa' and typeOfMachine != 'fa':
+        if typeOfMachine != 'fa' and typeOfMachine != 'tm':
             print("Invalid input, try again.")
         else:
             break
@@ -59,7 +62,7 @@ def createStateMachine():
         print("2. Add Edge")
         print("3. Declare Initial Node (Will rewrite previous initial node")
         print("4. Add Accepting/Final Node")
-        print("5. Remove Accepting/Final Node (Only makes it not an accepting node)")
+        print("5. Remove Accepting/Final Node (Makes it a nonaccepting node)")
         print("6. Remove a node")
         print("7. Remove an edge")
         print("8. Generate JFLAP file (.jff format)")
@@ -76,7 +79,7 @@ def createStateMachine():
         elif decision == '5':
             accepting = removeAcceptingNode(accepting)
         elif decision == '6':
-            nodeL, initial, accepting = deleteNode(nodeL, initial, accepting)
+            nodeL, initial, accepting, edgeL = deleteNode(nodeL, initial, accepting, edgeL)
         elif decision == '7':
             edgeL = removeEdge(edgeL, typeOfMachine)
         elif decision == '8':
@@ -96,6 +99,8 @@ def createStateMachine():
             print(accepting)
         else:
             print("Invalid input, Try again.")
+        time.sleep(0.1)
+        print("")
 
 def addNode(nodeL):
     print("Entering a new node. Enter q at anytime to quit.")
@@ -180,7 +185,7 @@ def getReadWriteVal(deterministic):
             print("You can't have lambda transitions on deterministic machines.")
             print("Enter a new read value, please!")
         if readVal == 'lambda':
-            
+            readVal = lamb
         if len(readVal) > 1:
             print("Edges only read one character at a time! Enter in one character next time.")
         else:
@@ -214,7 +219,7 @@ def declareStartNode(nodeL):
     while(True):
         for a0 in range(len(nodeL)):
             print(str(a0) + ". " + nodeL[a0])
-        start = input("Enter the Index of the node to make initial. 1 - " + str(len(nodeL) - 1) + ".\n")
+        start = input("Enter the Index of the node to make initial. 0 - " + str(len(nodeL) - 1) + ".\n")
         if start == 'q':
             return None
         if int(start) >= len(nodeL):
@@ -226,7 +231,7 @@ def declareAcceptingNode(nodeL, acceptingL):
     while(True):
         for a0 in range(len(nodeL)):
             print(str(a0) + ". " + nodeL[a0])
-        acc = input("Enter the index of the node you want to make accepting. 1 - " + str(len(nodeL) - 1) + ".\n")
+        acc = input("Enter the index of the node you want to make accepting. 0 - " + str(len(nodeL) - 1) + ".\n")
         if acc == 'q':
             return acceptingL
         elif int(acc) >= len(nodeL):
@@ -238,7 +243,7 @@ def declareAcceptingNode(nodeL, acceptingL):
 def removeAcceptingNode(acceptingL):
     for a0 in range(len(acceptingL)):
         print(str(a0) + ". " + acceptingL[a0])
-    delete = input("Enter the index of the node to remove from accepting nodes. 1 - " + str(len(acceptingL) - 1) + ".\n") 
+    delete = input("Enter the index of the node to remove from accepting nodes. 0 - " + str(len(acceptingL) - 1) + ".\n") 
     if delete == 'q':
         return acceptingL
     elif int(delete) >= len(acceptingL):
@@ -246,11 +251,11 @@ def removeAcceptingNode(acceptingL):
     else:
         return [acceptNode for acceptNode in acceptingL if acceptNode != acceptingL[int(delete)]]
 
-def deleteNode(nodeL, initial, acceptingL):
+def deleteNode(nodeL, initial, acceptingL, edgeL):
     while(True):
         for a0 in range(len(nodeL)):
             print(str(a0) + ". " + nodeL[a0])
-        delete = input("Enter the index of the node to remove from accepting nodes. 1 - " + str(len(nodeL) - 1) + ".\n")
+        delete = input("Enter the index of the node to remove from accepting nodes. 0 - " + str(len(nodeL) - 1) + ".\n")
         if delete == 'q':
             return nodeL, initial, acceptingL
         elif int(delete) >= len(nodeL):
@@ -259,19 +264,22 @@ def deleteNode(nodeL, initial, acceptingL):
             if initial == nodeL[int(delete)]:
                 initial = None
             if nodeL[int(delete)] in acceptingL:
-                acceptingL = [accept for accept in acceptingL if accept != nodeL[delete]]
+                acceptingL = [accept for accept in acceptingL if accept != nodeL[int(delete)]]
+            edgeL = [edge for edge in edgeL if edge[0] != nodeL[int(delete)]] and edge[1] != nodeL[(int(delete))]
             nodeL = [nodeL[a0] for a0 in range(len(nodeL)) if a0 != int(delete)]
-            return nodeL, initial, acceptingL
+            return nodeL, initial, acceptingL, edgeL
 
 def removeEdge(edgeL, typeOfMachine):
     while(True):
+        print("The edges will be listed in the following format:")
+        print("starting state / ending state / read value")
         if typeOfMachine == 'tm':
             for a0 in range(len(edgeL)):
                 print(str(a0) + ". " + edgeL[a0][0] + "/" + edgeL[a0][1] + "/ (" + edgeL[a0][2][0] + "/" + edgeL[a0][2][1] + "/" + edgeL[a0][2][2] + ")")
         else:
             for a0 in range(len(edgeL)):
                 print(str(a0) + ". " + edgeL[a0][0] + "/" + edgeL[a0][1] + "/" + edgeL[a0][2])
-        delete = input("Enter the index of the edge to delete. 1 - " + str(len(edgeL) - 1) + '.\n')
+        delete = input("Enter the index of the edge to delete. 0 - " + str(len(edgeL) - 1) + '.\n')
         if delete == 'q':
             return edgeL
         elif int(delete) >= len(edgeL):
