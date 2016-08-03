@@ -138,6 +138,9 @@ def writeTM(stateMech, filename):
     f.close()
 
 def writeJFFFile(stateMech, filename):
+    """
+    Given a stateMech and a filename, this will create a .jff file that JFLAP can read
+    """
     seed(time)
     if stateMech.machine == 'Finite State Automata':
         writeFA(stateMech, filename)
@@ -148,6 +151,8 @@ def writeJFFFile(stateMech, filename):
         return
 
 def convertFromJSFLAP2JFLAP(filename):
+    """Given a file name, attempts to open it and parse it for a state machine
+        Then creates a JFLAP file from it"""
     seed(time)
     stateMech = parseStateMachine(filename)
     writeJFFFile(stateMech, filename)

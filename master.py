@@ -6,9 +6,13 @@ import StateMachine
 import time
 import sys
 if sys.version_info < (3,0):
+    #This allows my code to work with both python 2 and 3
     input = raw_input
-DEBUG = True
+DEBUG = False
 def main():
+    """Main interface for students to choose between converting 
+        a JSFLAP file or creating a new Finite Automata from scratch
+        """
     while(True):
         print("Hello, this is a JSFLAP to JFLAP converter that converts JSFLAP Automaton definition files to JFLAP files, which are in .jff format")
         print("1. Convert JSFLAP File to .jff Format")
@@ -105,6 +109,9 @@ def createStateMachine():
         print("")
 
 def addNode(nodeL):
+    """Given a list nodeL - strings of the names of each node -
+        Asks user for name of a new node until a valid one is given, and checks if it's a new name
+        if so, add it to the list. """
     print("Entering a new node. Enter q at anytime to quit.")
     while(True):
         nodeName = input("Enter the name of the node:\n")
@@ -121,6 +128,7 @@ def addNode(nodeL):
     return nodeL
 
 def addEdge(nodeL, edgeL, typeOfMachine, deterministic):
+    """Asks user for an edge between ndoes until a valid one is given"""
     print("Entering a new edge. Enter q at anytime to quit.")
     startNode = None
     while(True):
@@ -163,6 +171,7 @@ def addEdge(nodeL, edgeL, typeOfMachine, deterministic):
     return edgeL
 
 def getReadVal(deterministic):
+    """Get a value the edge accepts for FA's"""
     while(True):
         if deterministic == 'd':
             readVal = input('What value does this edge read?:\n')
@@ -179,6 +188,8 @@ def getReadVal(deterministic):
             return readVal
 
 def getReadWriteVal(deterministic):
+    """Get a value that the edge accepts, writes, and direction to head to
+        for turing machines """
     while(True):
         if deterministic == 'd':
             readVal = input('What value does this edge read?:\n')
@@ -221,6 +232,7 @@ def getReadWriteVal(deterministic):
     return [readVal, writeVal, direction]
 
 def declareStartNode(nodeL):
+    """Asks users which node should be the starting node"""
     while(True):
         for a0 in range(len(nodeL)):
             print(str(a0) + ". " + nodeL[a0])
@@ -233,6 +245,7 @@ def declareStartNode(nodeL):
             return nodeL[int(start)]
 
 def declareAcceptingNode(nodeL, acceptingL):
+    """Asks uers which node should be the final node and returns a new final list"""
     while(True):
         for a0 in range(len(nodeL)):
             print(str(a0) + ". " + nodeL[a0])
@@ -246,6 +259,7 @@ def declareAcceptingNode(nodeL, acceptingL):
             return acceptingL
 
 def removeAcceptingNode(acceptingL):
+    """Remove a node from the list of acceptable final nodes"""
     for a0 in range(len(acceptingL)):
         print(str(a0) + ". " + acceptingL[a0])
     delete = input("Enter the index of the node to remove from accepting nodes. 0 - " + str(len(acceptingL) - 1) + ".\n") 
@@ -257,6 +271,8 @@ def removeAcceptingNode(acceptingL):
         return [acceptNode for acceptNode in acceptingL if acceptNode != acceptingL[int(delete)]]
 
 def deleteNode(nodeL, initial, acceptingL, edgeL):
+    """Remove a node from the graph completely
+        Also removes related dependencies"""
     while(True):
         for a0 in range(len(nodeL)):
             print(str(a0) + ". " + nodeL[a0])
@@ -275,6 +291,7 @@ def deleteNode(nodeL, initial, acceptingL, edgeL):
             return nodeL, initial, acceptingL, edgeL
 
 def removeEdge(edgeL, typeOfMachine):
+    """Removes an edge from the list of edges"""
     while(True):
         print("The edges will be listed in the following format:")
         print("starting state / ending state / read value")
@@ -293,6 +310,8 @@ def removeEdge(edgeL, typeOfMachine):
             return [edge for edge in edgeL if edge != edgeL[int(delete)]]
 
 def generateJFLAPFile(deterministic, typeOfMachine, nodeL, edgeL, initial, accepting):
+    """Using the list of nodes, edges, and the starting/final nodes
+        Generates a state machine and outputs it to a .jjf file"""
     newNodeL = [StateMachine.Node(node, [], node == initial, node in accepting) for node in nodeL]
     if DEBUG:
         print(newNodeL)
@@ -316,12 +335,16 @@ def generateJFLAPFile(deterministic, typeOfMachine, nodeL, edgeL, initial, accep
     
 
 def convertJSFLAPToJFLAP():
+    """Asks user the name of the file to convert"""
     filename = input("What is the name of the JSFLAP file you want to convert? (Don't forget the file extension)\n")
     if filename == 'q':
         return
     JFFWriterv2.convertFromJSFLAP2JFLAP(filename)
 
 def fixFile(filename):
+    """Adds some encoding details to headers of .jff file
+        Not really needed, but may be necessary for bug fixing later on """
+    
     file = open(filename, 'w+')
     string = file.read()
     string = string[:19] + 'encoding="UTF-8" standalone="no"' + string[19:]
