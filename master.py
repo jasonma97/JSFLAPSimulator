@@ -4,7 +4,9 @@ lamb = '☐'
 import JFFWriterv2
 import StateMachine
 import time
-input = raw_input
+import sys
+if sys.version_info < (3,0):
+    input = raw_input
 DEBUG = True
 def main():
     while(True):
