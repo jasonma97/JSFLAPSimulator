@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*- 
+
+# Jason Ma
+# August 1, 2016
 lamb = '☐'
 import JFFWriterv2
 import StateMachine
@@ -344,7 +347,6 @@ def convertJSFLAPToJFLAP():
 def fixFile(filename):
     """Adds some encoding details to headers of .jff file
         Not really needed, but may be necessary for bug fixing later on """
-    
     file = open(filename, 'w+')
     string = file.read()
     string = string[:19] + 'encoding="UTF-8" standalone="no"' + string[19:]
